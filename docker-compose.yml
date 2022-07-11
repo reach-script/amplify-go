@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "54329:5432"
+    container_name: amplify-go-db

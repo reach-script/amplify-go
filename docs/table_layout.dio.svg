@@ -1,0 +1,136 @@
+<svg host="65bd71144e" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="482px" height="503px" viewBox="-0.5 -0.5 482 503" content="&lt;mxfile&gt;&lt;diagram id=&quot;qki-kgukDruPw0MYkCE1&quot; name=&quot;Page-1&quot;&gt;7VlNT+MwEP01ldgLymdpj1BgV1rQIlhp2VNlYrexcOLKcaDl1+84tvNdtrRZDqteUOfZHmfmzfjFYeTPkvVXgVbxLceEjTwHr0f+5cjzpq4HfxWw0UAYOBpYCoo15FbAA30jBrTTcopJ1pgoOWeSrppgxNOURLKBISH4a3PagrPmriu0JB3gIUKsi/6iWMYanXhnFf6N0GVsd3bHUz2SIDvZRJLFCPPXGuRfjfyZ4FzqX8l6RpjKnc2LXne9ZbR8MEFSucsC3zDxglhugsszIjLzdHJjQ85eacJQCtZFFFOGb9CG52qLTKLo2VoXMRf0jacSMRhyAYBhIQ2DvtOY8aBWAqxQwfMUE2wWLWDcrHEDa5tncQqngj+XqffUepLB/Dsbt1NCNyiT9lFsrtUoRllc7KcMxOgyhd8RrCYCAJMUIiRZb82sW/IFdU54QqTYwBS7wFJsatwdG/u1qpgSi+vVYkFkqnRZ+q6IhB+Gyy28+r28zik+ufv+ZeSNR57vqtChRZYplXye5U8n142hFCWkZmKarRjazFswekFAcd2jIEgSPEeyBuYr3AXhVCAAKqxVbZYQRhay5HvGGQdyLlNelOGCMtaCshWKaLq8KVZdBq1KUnWiKKXQyOdmA8lXtlTQU1lfgksIqrKBdVtEO1WG7qpuaZhS8HetBH+ISgg6lSBR9nzs8IM7PHCaHe57u/IaDsFr2Mtrt8Nt3zebW1LJSPMckCruCgFeZZ51Vx772/TU4f3tDVEH404ddNJNMLy+GBOCoHJzTxiSlKdX1Ugnl7FMbI+TFJ+r9yYwr+6Bi5/8FqUbNbCm8lFl8XQ6nRj7d2G7rjEv1ybLhbGpGXdEUIhX9aPGUoj9sW5oV15o7cpXYVlnOmAV5futDEnhuYhIUyPh/FoSy2zYz2ydSqePSguKIrEvzQfp49fsccep6rryTAlaZ0r7ZUAHYFbVX+xajsKWI6/tSEfdcVSUWxn4bhV41qlAfXYcJWZoidn9JXKQo2WyhdiuyECI8hCNmP+HInE2iEhMhyBy+tkakaAU/9B0qN7tG7DS4Z46TtCSjun+2lG6q/TDDSd/EZDCarvcU1XCHlWZHFXlo6pid6rVbMSTBFJ/1JXBdSV0JzvqSuAdfhwF7jZqe4TF3Gmu35Ob/ivOUYRsFx1+U3GHoL37rfEfq1DjplITCH03OVggagpW3naMw/HZhxVsOLkJtjT/Z8lN2DpdgsmecjNuf2FpO9pbbsCsPrLr6dV/KvyrPw==&lt;/diagram&gt;&lt;/mxfile&gt;">
+    <defs/>
+    <g>
+        <path d="M 160 31 L 160 14.5 Q 160 1 146.5 1 L 13.5 1 Q 0 1 0 14.5 L 0 31" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="all"/>
+        <path d="M 0 31 L 0 147.5 Q 0 161 13.5 161 L 146.5 161 Q 160 161 160 147.5 L 160 31" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 0 31 L 160 31" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="14px">
+            <text x="79.5" y="21.5">
+                users
+            </text>
+        </g>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" font-size="12px">
+            <text x="5.5" y="48.5">
+                user_id(PK)
+            </text>
+            <text x="5.5" y="62.5">
+                congnito_sub(FK)
+            </text>
+            <text x="5.5" y="76.5">
+                name
+            </text>
+            <text x="5.5" y="90.5">
+                display_name
+            </text>
+            <text x="5.5" y="104.5">
+                avatar
+            </text>
+            <text x="5.5" y="118.5">
+                created_at
+            </text>
+            <text x="5.5" y="132.5">
+                updated_at
+            </text>
+            <text x="5.5" y="146.5">
+                deletedat
+            </text>
+        </g>
+        <path d="M 440 191 L 440 174.5 Q 440 161 426.5 161 L 293.5 161 Q 280 161 280 174.5 L 280 191" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 191 L 280 297.5 Q 280 311 293.5 311 L 426.5 311 Q 440 311 440 297.5 L 440 191" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 191 L 440 191" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="14px">
+            <text x="359.5" y="181.5">
+                tasks
+            </text>
+        </g>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" font-size="12px">
+            <text x="285.5" y="208.5">
+                task_id(PK)
+            </text>
+            <text x="285.5" y="222.5">
+                user_id(FK)
+            </text>
+            <text x="285.5" y="236.5">
+                title
+            </text>
+            <text x="285.5" y="250.5">
+                content
+            </text>
+            <text x="285.5" y="264.5">
+                status_id(FK)
+            </text>
+            <text x="285.5" y="278.5">
+                created_at
+            </text>
+            <text x="285.5" y="292.5">
+                updated_at
+            </text>
+            <text x="285.5" y="306.5">
+                deletedat
+            </text>
+        </g>
+        <path d="M 159.68 45.3 L 179.68 45.3 Q 189.68 45.3 192.93 54.76 L 246.75 211.54 Q 250 221 260 221 L 280 221" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 272 225 L 272 217 M 280 217 L 272 221 L 280 225" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 440 31 L 440 14.5 Q 440 1 426.5 1 L 293.5 1 Q 280 1 280 14.5 L 280 31" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 31 L 280 107.5 Q 280 121 293.5 121 L 426.5 121 Q 440 121 440 107.5 L 440 31" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 31 L 440 31" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="14px">
+            <text x="359.5" y="21.5">
+                status
+            </text>
+        </g>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" font-size="12px">
+            <text x="285.5" y="48.5">
+                status_id(PK)
+            </text>
+            <text x="285.5" y="62.5">
+                text
+            </text>
+            <text x="285.5" y="76.5">
+                created_at
+            </text>
+            <text x="285.5" y="90.5">
+                updated_at
+            </text>
+            <text x="285.5" y="104.5">
+                deleted_at
+            </text>
+        </g>
+        <path d="M 440.64 205.28 L 460.64 205.28 Q 470.64 205.28 470.64 195.28 L 470.64 55.22 Q 470.64 45.22 460.64 45.22 L 440.64 45.22" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 444.64 201.28 L 444.64 209.28 M 448.64 201.28 L 448.64 209.28" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 444.64 41.22 L 444.64 49.22 M 448.64 41.22 L 448.64 49.22" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 440 389 L 440 372.5 Q 440 359 426.5 359 L 293.5 359 Q 280 359 280 372.5 L 280 389" fill="rgb(255, 255, 255)" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 389 L 280 487.5 Q 280 501 293.5 501 L 426.5 501 Q 440 501 440 487.5 L 440 389" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 280 389 L 440 389" fill="none" stroke="rgb(0, 0, 0)" stroke-width="2" stroke-miterlimit="10" pointer-events="none"/>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" text-anchor="middle" font-size="14px">
+            <text x="359.5" y="379.5">
+                comments
+            </text>
+        </g>
+        <g fill="rgb(0, 0, 0)" font-family="Helvetica" pointer-events="none" font-size="12px">
+            <text x="285.5" y="406.5">
+                comment_id(PK)
+            </text>
+            <text x="285.5" y="420.5">
+                task_id(FK)
+            </text>
+            <text x="285.5" y="434.5">
+                text
+            </text>
+            <text x="285.5" y="448.5">
+                user_id(FK)
+            </text>
+            <text x="285.5" y="462.5">
+                created_at
+            </text>
+            <text x="285.5" y="476.5">
+                updated_at
+            </text>
+            <text x="285.5" y="490.5">
+                deleted_at
+            </text>
+        </g>
+        <path d="M 441.76 211.04 L 461.76 211.04 Q 471.76 211.04 471.76 221.04 L 471.76 396.7 Q 471.76 406.7 461.76 406.7 L 441.76 406.7" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+        <path d="M 449.76 402.7 L 449.76 410.7 M 441.76 410.7 L 449.76 406.7 L 441.76 402.7" fill="none" stroke="rgb(0, 0, 0)" stroke-miterlimit="10" pointer-events="none"/>
+    </g>
+</svg>
