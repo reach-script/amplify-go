@@ -4,7 +4,6 @@ import (
 	"backend/domain/entity"
 	"backend/packages/context"
 	"backend/usecase"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -66,7 +65,6 @@ func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
 	user.ID = params.ID
 	_, err := handler.userUseCase.Update(db, &user)
 	if err != nil {
-		log.Println("%v", err)
 		panic(err)
 	}
 

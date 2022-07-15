@@ -1,23 +1,42 @@
-package main
+package middleware
 
 import (
+	"backend/config"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/big"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
-// TODO: env
-var cognitoUserPoolId = "ap-northeast-1_Oxzc2wtHu"
-var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", cognitoUserPoolId)
+var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.USER_POOL_ID)
+
+func WithAuth(c *gin.Context) {
+	authorizationValue := c.Request.Header.Get("Authorization")
+	tokenString := strings.Split(authorizationValue, " ")[1]
+
+	ok, err := authCheck(tokenString)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	if ok {
+		c.Next()
+		return
+	}
+
+	c.AbortWithStatus(http.StatusForbidden)
+}
 
 type Header struct {
 	Kid string `json:"kid"`
@@ -120,20 +139,19 @@ func convertKey(key Key) *rsa.PublicKey {
 	return publicKey
 }
 
-func main() {
-	buff, _ := ioutil.ReadFile("token01.txt")
-	tokenString := string(buff)
-
+func authCheck(tokenString string) (bool, error) {
 	header, claim, err := decodeJwt(tokenString)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
+	log.Println("issuer")
+	log.Println(issuer)
 	url := fmt.Sprintf("%s/.well-known/jwks.json", issuer)
 
 	response, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	defer response.Body.Close()
 
@@ -152,21 +170,22 @@ func main() {
 
 	token, err := verify(tokenString, key)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	if !token.Valid {
-		panic("is invalid token")
+		return false, nil
 	}
 	if err := token.Claims.Valid(); err != nil {
-		panic(err)
+		return false, err
 	}
 
 	fmt.Println(claim)
 	isValidClaim := verifyClaim(*claim)
 	if !isValidClaim {
-		panic("is invalid claim")
+		return false, nil
 	}
 
+	return true, nil
 }
 
 /**

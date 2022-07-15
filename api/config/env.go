@@ -22,6 +22,9 @@ type EnvType struct {
 	API struct {
 		Port string
 	}
+	AWS struct {
+		USER_POOL_ID string
+	}
 }
 
 func envExists(path string) bool {
@@ -32,7 +35,7 @@ func envExists(path string) bool {
 }
 
 func init() {
-	dotenvPath := "../.env"
+	dotenvPath := ".env"
 	if dotenvPathEnv := os.Getenv("DOTENV_PATH"); dotenvPathEnv != "" {
 		dotenvPath = dotenvPathEnv
 	}

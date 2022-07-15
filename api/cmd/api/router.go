@@ -4,6 +4,7 @@ import (
 	"backend/infrastructure/database"
 	"backend/infrastructure/persistence"
 	"backend/interface/handler"
+	"backend/interface/middleware"
 	"backend/packages/context"
 	"backend/usecase"
 
@@ -20,6 +21,7 @@ func registerRoutes(r *gin.Engine) {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	userApi := r.Group("users")
+	userApi.Use(middleware.WithAuth)
 	userApi.GET("/:id", wrapperFunc(userHandler.GetByID))
 	userApi.POST("/", wrapperFunc(userHandler.Create))
 	userApi.PATCH("/", wrapperFunc(userHandler.Update))

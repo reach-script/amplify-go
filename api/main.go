@@ -6,6 +6,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func main1() {
+func main() {
 	api.Execute()
 }
