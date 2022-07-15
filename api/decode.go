@@ -1,18 +1,34 @@
 package main
 
 import (
-	b64 "encoding/base64"
+	"crypto/rsa"
+	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
-type publicKey struct {
-	Keys []key `json:"keys"`
+// TODO: env
+var cognitoUserPoolId = "ap-northeast-1_Oxzc2wtHu"
+var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", cognitoUserPoolId)
+
+type Header struct {
+	Kid string `json:"kid"`
+	Alg string `json:"alg"`
 }
-type key struct {
+
+type Jwk struct {
+	Keys []Key
+}
+
+type Key struct {
 	Alg string `json:"alg"`
 	E   string `json:"e"`
 	Kid string `json:"kid"`
@@ -21,7 +37,7 @@ type key struct {
 	Use string `json:"use"`
 }
 
-type payload struct {
+type Claim struct {
 	Sub       string `json:"sub"`
 	Iss       string `json:"iss"`
 	ClientID  string `json:"client_id"`
@@ -36,40 +52,84 @@ type payload struct {
 	Username  string `json:"username"`
 }
 
-func decodeJwt(token string) (string, error) {
-	divided := strings.Split(token, ".")
-	temp := strings.Replace(divided[1], "-", "+", -1)
-	placed := strings.Replace(temp, "_", "/", -1)
-
-	llx := len(placed)
-	nnx := ((4 - llx%4) % 4)
-	ssx := strings.Repeat("=", nnx)
-	joined := strings.Join([]string{placed, ssx}, "")
-	str, err := b64.StdEncoding.DecodeString(joined)
-	if err != nil {
-		return "", err
+func decodeJwt(token string) (*Header, *Claim, error) {
+	tokenSections := strings.Split(token, ".")
+	if len(tokenSections) < 2 {
+		panic("requested token is invalid")
 	}
+	headerSection := tokenSections[0]
+	payloadSection := tokenSections[1]
 
-	uEnc := b64.URLEncoding.EncodeToString([]byte(str))
-	decode, _ := b64.URLEncoding.DecodeString(uEnc)
+	decodedHeader, _ := base64.RawURLEncoding.DecodeString(headerSection)
+	decodedPayload, _ := base64.RawURLEncoding.DecodeString(payloadSection)
 
-	return string(decode), nil
+	header := Header{}
+	claim := Claim{}
+
+	json.Unmarshal(decodedHeader, &header)
+	json.Unmarshal(decodedPayload, &claim)
+
+	return &header, &claim, nil
+}
+
+func verify(tokenString string, key Key) (*jwt.Token, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		key := convertKey(key)
+		return key, nil
+	})
+	return token, err
+}
+
+func verifyClaim(claim Claim) (ok bool) {
+	ok = true
+	// NOTE: 有効期限チェック
+	currentSec := time.Now().Unix()
+	if currentSec > int64(claim.Exp) {
+		fmt.Println("token is expired")
+	}
+	// NOTE: JWT発行者チェック
+	if claim.Iss != issuer {
+		fmt.Println("invalid iss")
+	}
+	// 使用トークンチェック
+	if claim.TokenUse != "access" {
+		fmt.Println("invalid token use")
+	}
+	return ok
+}
+
+func convertKey(key Key) *rsa.PublicKey {
+	decodedE, err := base64.RawStdEncoding.DecodeString(key.E)
+	if err != nil {
+		panic(err)
+	}
+	if len(decodedE) < 4 {
+		ndata := make([]byte, 4)
+		copy(ndata[4-len(decodedE):], decodedE)
+		decodedE = ndata
+	}
+	publicKey := &rsa.PublicKey{
+		N: &big.Int{},
+		E: int(binary.BigEndian.Uint32(decodedE[:])),
+	}
+	decodedN, err := base64.RawURLEncoding.DecodeString(key.N)
+	if err != nil {
+		panic(err)
+	}
+	publicKey.N.SetBytes(decodedN)
+	return publicKey
 }
 
 func main() {
 	buff, _ := ioutil.ReadFile("token01.txt")
-	decoded, err := decodeJwt(string(buff))
+	tokenString := string(buff)
 
+	header, claim, err := decodeJwt(tokenString)
 	if err != nil {
 		panic(err)
 	}
 
-	payloadObj := payload{}
-	json.Unmarshal([]byte(decoded), &payloadObj)
-
-	fmt.Println(payloadObj.Iss)
-
-	url := fmt.Sprintf("%s/.well-known/jwks.json", payloadObj.Iss)
+	url := fmt.Sprintf("%s/.well-known/jwks.json", issuer)
 
 	response, err := http.Get(url)
 	if err != nil {
@@ -77,31 +137,37 @@ func main() {
 	}
 	defer response.Body.Close()
 
-	obj := publicKey{}
+	jwk := Jwk{}
 	byteArray, _ := ioutil.ReadAll(response.Body)
-	json.Unmarshal(byteArray, &obj)
+	json.Unmarshal(byteArray, &jwk)
 
-	for _, v := range obj.Keys {
-		fmt.Println(v)
+	fmt.Println(jwk)
+
+	key := Key{}
+	for _, v := range jwk.Keys {
+		if v.Kid == header.Kid {
+			key = v
+		}
 	}
-}
 
-/**
-{
-	"sub":"11ad928e-a71a-46ec-840f-0572da32aa97",
-	"iss":"https:\/\/cognito-idp.ap-northeast-1.amazonaws.com\/ap-northeast-1_Oxzc2wtHu",
-	"client_id":"60b9pj6tmet4gsgn0kdf6quv3b",
-	"origin_jti":"83dc8b35-93d4-4004-acf3-eac2aaf24a28",
-	"event_id":"939455ef-feb8-4a42-9048-e23299cb9d66",
-	"token_use":"access",
-	"scope":"aws.cognito.signin.user.admin",
-	"auth_time":1657631298,
-	"exp":1657634898,
-	"iat":1657631298,
-	"jti":"81d1fff5-e906-4457-9a7c-766a78512784",
-	"username":"11ad928e-a71a-46ec-840f-0572da32aa97"
+	token, err := verify(tokenString, key)
+	if err != nil {
+		panic(err)
+	}
+	if !token.Valid {
+		panic("is invalid token")
+	}
+	if err := token.Claims.Valid(); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(claim)
+	isValidClaim := verifyClaim(*claim)
+	if !isValidClaim {
+		panic("is invalid claim")
+	}
+
 }
-*/
 
 /**
 @see https://docs.aws.amazon.com/ja_jp/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html

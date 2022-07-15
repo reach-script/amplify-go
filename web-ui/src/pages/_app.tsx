@@ -8,7 +8,19 @@ import "@aws-amplify/ui-react/styles.css";
 
 import awsExports from "../aws-exports";
 import { UseAuthenticator } from "@aws-amplify/ui-react/dist/types/components/Authenticator/hooks/useAuthenticator";
-Amplify.configure(awsExports);
+Amplify.configure({
+  ...awsExports,
+  // API: {
+  //   endpoints: [
+  //     {
+  //       name: "test",
+  //       endpoint:
+  //         "https://ypuapr51pk.execute-api.ap-northeast-1.amazonaws.com/main",
+  //       region: "ap-northeast-1",
+  //     },
+  //   ],
+  // },
+});
 
 // https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_Oxzc2wtHu/.well-known/jwks.json
 
