@@ -22,13 +22,6 @@ import (
 
 var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.USER_POOL_ID)
 
-type User struct {
-	UserID string `dynamo:"UserID,hash"`
-	Name   string `dynamo:"Name,range"`
-	Age    int    `dynamo:"Age"`
-	Text   string `dynamo:"Text"`
-}
-
 type Token struct {
 	Payload  string `dynamo:"payload,hash"`
 	Disabled bool   `dynamo:"disabled"`
