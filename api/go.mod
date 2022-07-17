@@ -6,13 +6,17 @@ require gorm.io/driver/postgres v1.3.8
 
 require (
 	bitbucket.org/liamstask/goose v0.0.0-20150115234039-8488cc47d90c // indirect
+	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kylelemons/go-gypsy v1.0.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
 )
 
 require (
+	github.com/aws/aws-sdk-go v1.44.56
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
@@ -20,6 +24,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/goccy/go-json v0.9.8 // indirect
+	github.com/guregu/dynamo v1.15.1
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

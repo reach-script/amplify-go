@@ -23,7 +23,11 @@ type EnvType struct {
 		Port string
 	}
 	AWS struct {
-		USER_POOL_ID string
+		USER_POOL_ID      string
+		REGION            string
+		DYNAMO_ENDPOINT   string
+		ACCESS_KEY_ID     string
+		SECRET_ACCESS_KEY string
 	}
 }
 

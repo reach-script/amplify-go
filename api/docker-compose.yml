@@ -1,13 +1,35 @@
 version: "3.7"
 
 services:
-  db:
+  rdb:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/postgres/Dockerfile
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "54329:5432"
-    container_name: amplify-go-db
+    container_name: amplify-go-rdb
+  dynamodb:
+    build:
+      context: .
+      dockerfile: ./docker/dynamodb/Dockerfile
+    user: root
+    ports:
+      - "8000:8000"
+    container_name: amplify-go-dynamodb
+  dynamodb-admin:
+    container_name: dynamodb-admin
+    image: aaronshaf/dynamodb-admin:latest
+    environment:
+      - DYNAMO_ENDPOINT=dynamodb:8000
+    ports:
+      - 8001:8001
+    depends_on:
+      - dynamodb
+volumes:
+  dynamodb:
+    driver: local
+  bin:
+    driver: local

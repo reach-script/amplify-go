@@ -11,8 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HandlerFunc func(ctx context.Context, c *gin.Context) error
-
 func registerRoutes(r *gin.Engine) {
 	userPersistance := persistence.NewUserPersistance()
 
@@ -21,17 +19,19 @@ func registerRoutes(r *gin.Engine) {
 	userHandler := handler.NewUserHandler(userUseCase)
 
 	userApi := r.Group("users")
-	userApi.Use(middleware.WithAuth)
+	userApi.Use(middleware.Auth)
 	userApi.GET("/:id", wrapperFunc(userHandler.GetByID))
 	userApi.POST("/", wrapperFunc(userHandler.Create))
 	userApi.PATCH("/", wrapperFunc(userHandler.Update))
 	userApi.DELETE("/:id", wrapperFunc(userHandler.Delete))
 }
 
+type HandlerFunc func(ctx context.Context, c *gin.Context) error
+
 func wrapperFunc(handlerFunc HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		ctx := context.New(c, database.Get)
+		ctx := context.New(c, database.GetRDB, database.GetDynamoDB)
 
 		handlerFunc(ctx, c)
 

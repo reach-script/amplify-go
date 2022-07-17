@@ -31,7 +31,7 @@ func NewUserHandler(userUseCase usecase.User) UserHandler {
 }
 
 func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) error {
-	db := ctx.DB()
+	rdb := ctx.RDB()
 	params := createUserParams{}
 	if err := c.BindJSON(&params); err != nil {
 		panic(err)
@@ -41,7 +41,7 @@ func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) error {
 		Name:       params.Name,
 		CognitoSub: params.CognitoSub,
 	}
-	user, err := handler.userUseCase.Create(db, &userEntity)
+	user, err := handler.userUseCase.Create(rdb, &userEntity)
 
 	if err != nil {
 		panic(err)
@@ -52,7 +52,7 @@ func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) error {
 }
 
 func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
-	db := ctx.DB()
+	rdb := ctx.RDB()
 	params := updateUserParams{}
 	if err := c.BindJSON(&params); err != nil {
 		panic(err)
@@ -63,7 +63,7 @@ func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
 		CognitoSub: params.CognitoSub,
 	}
 	user.ID = params.ID
-	_, err := handler.userUseCase.Update(db, &user)
+	_, err := handler.userUseCase.Update(rdb, &user)
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +73,7 @@ func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
 }
 
 func (handler *UserHandler) Delete(ctx context.Context, c *gin.Context) error {
-	db := ctx.DB()
+	db := ctx.RDB()
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
@@ -86,9 +86,9 @@ func (handler *UserHandler) Delete(ctx context.Context, c *gin.Context) error {
 }
 
 func (handler *UserHandler) GetByID(ctx context.Context, c *gin.Context) error {
-	db := ctx.DB()
+	rdb := ctx.RDB()
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	user, err := handler.userUseCase.GetByID(db, uint(id))
+	user, err := handler.userUseCase.GetByID(rdb, uint(id))
 
 	if err != nil {
 		panic(err)

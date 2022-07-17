@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"backend/config"
+	"backend/infrastructure/database"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,22 +22,58 @@ import (
 
 var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.USER_POOL_ID)
 
-func WithAuth(c *gin.Context) {
+type User struct {
+	UserID string `dynamo:"UserID,hash"`
+	Name   string `dynamo:"Name,range"`
+	Age    int    `dynamo:"Age"`
+	Text   string `dynamo:"Text"`
+}
+
+type Token struct {
+	Payload  string `dynamo:"payload,hash"`
+	Disabled bool   `dynamo:"disabled"`
+	Ttl      int    `dynamo:"ttl"`
+}
+
+func Auth(c *gin.Context) {
 	authorizationValue := c.Request.Header.Get("Authorization")
 	tokenString := strings.Split(authorizationValue, " ")[1]
 
-	ok, err := authCheck(tokenString)
+	claim, err := auth(tokenString)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	if ok {
+
+	if claim == nil {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
+
+	ddb := database.GetDynamoDB()
+	table := ddb.Table("Token")
+	var token Token
+
+	payload := strings.Split(tokenString, ".")[1]
+	err = table.Get("payload", payload).One(&token)
+	if err != nil {
+		err = table.Put(&Token{Payload: payload, Disabled: false, Ttl: claim.Exp}).Run()
+		if err != nil {
+			panic(err)
+		}
 		c.Next()
 		return
 	}
 
-	c.AbortWithStatus(http.StatusForbidden)
+	if token.Disabled {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
+
+	c.Next()
+	return
+
 }
 
 type Header struct {
@@ -139,27 +177,23 @@ func convertKey(key Key) *rsa.PublicKey {
 	return publicKey
 }
 
-func authCheck(tokenString string) (bool, error) {
+func auth(tokenString string) (*Claim, error) {
 	header, claim, err := decodeJwt(tokenString)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	log.Println("issuer")
-	log.Println(issuer)
 	url := fmt.Sprintf("%s/.well-known/jwks.json", issuer)
 
 	response, err := http.Get(url)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	defer response.Body.Close()
 
 	jwk := Jwk{}
 	byteArray, _ := ioutil.ReadAll(response.Body)
 	json.Unmarshal(byteArray, &jwk)
-
-	fmt.Println(jwk)
 
 	key := Key{}
 	for _, v := range jwk.Keys {
@@ -170,22 +204,21 @@ func authCheck(tokenString string) (bool, error) {
 
 	token, err := verify(tokenString, key)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if !token.Valid {
-		return false, nil
+		return nil, nil
 	}
 	if err := token.Claims.Valid(); err != nil {
-		return false, err
+		return nil, err
 	}
 
-	fmt.Println(claim)
 	isValidClaim := verifyClaim(*claim)
 	if !isValidClaim {
-		return false, nil
+		return nil, errors.New("in valid claim")
 	}
 
-	return true, nil
+	return claim, nil
 }
 
 /**

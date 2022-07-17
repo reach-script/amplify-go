@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	db := database.Get()
+	db := database.GetRDB()
 
 	entities := []interface{}{
 		&entity.User{},
