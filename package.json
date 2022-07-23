@@ -1,5 +1,6 @@
 {
   "devDependencies": {
     "@aws-amplify/cli": "^9.1.0"
-  }
+  },
+  "dependencies": {}
 }
