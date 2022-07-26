@@ -2,7 +2,9 @@ package middleware
 
 import (
 	"backend/config"
+	"backend/domain/entity"
 	"backend/infrastructure/database"
+	"backend/packages/utils"
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/binary"
@@ -13,26 +15,17 @@ import (
 	"log"
 	"math/big"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/guregu/dynamo"
 )
 
 var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.USER_POOL_ID)
 
-type Token struct {
-	Payload  string `dynamo:"payload,hash"`
-	Disabled bool   `dynamo:"disabled"`
-	Ttl      int    `dynamo:"ttl"`
-}
-
 func Auth(c *gin.Context) {
-	authorizationValue := c.Request.Header.Get("Authorization")
-	tokenString := strings.Split(authorizationValue, " ")[1]
-
-	claim, err := auth(tokenString)
+	claim, jwt, err := auth(c)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusInternalServerError)
@@ -44,14 +37,14 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	ddb := database.GetDynamoDB()
-	table := ddb.Table("Token")
-	var token Token
+	db := database.GetDynamoDB()
+	table := db.Table("Session")
+	var auth entity.Auth
 
-	payload := strings.Split(tokenString, ".")[1]
-	err = table.Get("payload", payload).One(&token)
+	err = table.Get("key1", claim.Sub).Range("key2", dynamo.Equal, jwt.Payload).One(&auth)
 	if err != nil {
-		err = table.Put(&Token{Payload: payload, Disabled: false, Ttl: claim.Exp}).Run()
+		item := entity.Auth{Key1: claim.Sub, Key2: jwt.Payload, Payload: jwt.Payload, Disabled: false, Ttl: claim.Exp}
+		err = table.Put(&item).Run()
 		if err != nil {
 			panic(err)
 		}
@@ -59,7 +52,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	if token.Disabled {
+	if auth.Disabled {
 		c.AbortWithStatus(http.StatusForbidden)
 		return
 	}
@@ -87,41 +80,6 @@ type Key struct {
 	Use string `json:"use"`
 }
 
-type Claim struct {
-	Sub       string `json:"sub"`
-	Iss       string `json:"iss"`
-	ClientID  string `json:"client_id"`
-	OriginJti string `json:"origin_jti"`
-	EventID   string `json:"event_id"`
-	TokenUse  string `json:"token_use"`
-	Scope     string `json:"scope"`
-	AuthTime  int    `json:"auth_time"`
-	Exp       int    `json:"exp"`
-	Iat       int    `json:"iat"`
-	Jti       string `json:"jti"`
-	Username  string `json:"username"`
-}
-
-func decodeJwt(token string) (*Header, *Claim, error) {
-	tokenSections := strings.Split(token, ".")
-	if len(tokenSections) < 2 {
-		panic("requested token is invalid")
-	}
-	headerSection := tokenSections[0]
-	payloadSection := tokenSections[1]
-
-	decodedHeader, _ := base64.RawURLEncoding.DecodeString(headerSection)
-	decodedPayload, _ := base64.RawURLEncoding.DecodeString(payloadSection)
-
-	header := Header{}
-	claim := Claim{}
-
-	json.Unmarshal(decodedHeader, &header)
-	json.Unmarshal(decodedPayload, &claim)
-
-	return &header, &claim, nil
-}
-
 func verify(tokenString string, key Key) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		key := convertKey(key)
@@ -130,7 +88,7 @@ func verify(tokenString string, key Key) (*jwt.Token, error) {
 	return token, err
 }
 
-func verifyClaim(claim Claim) (ok bool) {
+func verifyClaim(claim entity.Claim) (ok bool) {
 	ok = true
 	// NOTE: 有効期限チェック
 	currentSec := time.Now().Unix()
@@ -170,17 +128,19 @@ func convertKey(key Key) *rsa.PublicKey {
 	return publicKey
 }
 
-func auth(tokenString string) (*Claim, error) {
-	header, claim, err := decodeJwt(tokenString)
+func auth(c *gin.Context) (*entity.Claim, *utils.Jwt, error) {
+	tokenString := utils.GetJwt(c)
+	jwt := utils.NewJwt(tokenString)
+	header, claim, err := utils.DecodeJwt(jwt)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	url := fmt.Sprintf("%s/.well-known/jwks.json", issuer)
 
 	response, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer response.Body.Close()
 
@@ -197,21 +157,21 @@ func auth(tokenString string) (*Claim, error) {
 
 	token, err := verify(tokenString, key)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if !token.Valid {
-		return nil, nil
+		return nil, nil, nil
 	}
 	if err := token.Claims.Valid(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	isValidClaim := verifyClaim(*claim)
 	if !isValidClaim {
-		return nil, errors.New("in valid claim")
+		return nil, nil, errors.New("in valid claim")
 	}
 
-	return claim, nil
+	return claim, &jwt, nil
 }
 
 /**

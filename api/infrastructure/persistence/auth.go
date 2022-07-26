@@ -3,6 +3,7 @@ package persistence
 import (
 	"backend/domain/entity"
 	"backend/domain/repository"
+	"log"
 
 	"github.com/guregu/dynamo"
 )
@@ -14,11 +15,12 @@ func NewAuthPersistance() repository.AuthRepository {
 }
 
 func (a *authPersistance) Logout(db *dynamo.DB, auth *entity.Auth) error {
-	table := db.Table("Token")
+	table := db.Table("Session")
 
-	table.Get("payload", auth.Payload).One(&auth)
+	log.Println(auth)
+	table.Get("key1", auth.Key1).Range("key2", dynamo.Equal, auth.Key2).One(&auth)
 	auth.Disabled = true
-	if err := db.Table("Token").Put(auth).Run(); err != nil {
+	if err := table.Put(auth).Run(); err != nil {
 		return err
 	}
 	return nil
