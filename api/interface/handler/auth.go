@@ -3,8 +3,8 @@ package handler
 import (
 	"backend/domain/entity"
 	"backend/packages/context"
-	"backend/packages/utils"
 	"backend/usecase"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,8 +22,10 @@ func NewAuthHandler(authUseCase usecase.Auth) AuthHandler {
 func (handler *AuthHandler) Logout(ctx context.Context, c *gin.Context) error {
 	db := ctx.DynamoDB()
 
-	token := utils.GetJwt(c)
-	jwt := utils.NewJwt(token)
+	authorizationValue := c.Request.Header.Get("Authorization")
+	token := strings.Split(authorizationValue, " ")[1]
+
+	jwt := entity.NewJwt(token)
 
 	auth := entity.Auth{
 		Key1:    ctx.Claim().Sub,
