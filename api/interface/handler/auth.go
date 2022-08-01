@@ -28,8 +28,7 @@ func (handler *AuthHandler) Logout(ctx context.Context, c *gin.Context) error {
 	jwt := entity.NewJwt(token)
 
 	auth := entity.Auth{
-		Key1:    ctx.Claim().Sub,
-		Key2:    jwt.Payload,
+		Sub:     ctx.Claim().Sub,
 		Payload: jwt.Payload,
 	}
 

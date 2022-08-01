@@ -57,7 +57,7 @@ func Auth(c *gin.Context) {
 
 	err = table.Get("key1", jwt.Claim.Sub).Range("key2", dynamo.Equal, jwt.Payload).One(&auth)
 	if err != nil {
-		item := entity.Auth{Key1: jwt.Claim.Sub, Key2: jwt.Payload, Payload: jwt.Payload, Disabled: false, Ttl: jwt.Claim.Exp}
+		item := entity.Auth{Sub: jwt.Claim.Sub, Payload: jwt.Payload, Disabled: false, Ttl: jwt.Claim.Exp}
 		err = table.Put(&item).Run()
 		if err != nil {
 			panic(err)

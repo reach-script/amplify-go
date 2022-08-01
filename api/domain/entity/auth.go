@@ -1,9 +1,8 @@
 package entity
 
 type Auth struct {
-	Key1     string `dynamo:"key1,hash"`
-	Key2     string `dynamo:"key2,range"`
-	Payload  string `dynamo:"payload"`
+	Sub      string `dynamo:"key1,hash"`
+	Payload  string `dynamo:"key2,range"`
 	Disabled bool   `dynamo:"disabled"`
 	Ttl      int    `dynamo:"ttl"`
 }
