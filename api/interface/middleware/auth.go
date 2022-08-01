@@ -32,12 +32,17 @@ type key struct {
 	Use string `json:"use"`
 }
 
-var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.USER_POOL_ID)
+var issuer = fmt.Sprintf("https://cognito-idp.ap-northeast-1.amazonaws.com/%s", config.Env.AWS.Cognito.USER_POOL_ID)
 
 func Auth(c *gin.Context) {
 	authorizationValue := c.Request.Header.Get("Authorization")
 	tokenString := strings.Split(authorizationValue, " ")[1]
 	jwt := entity.NewJwt(tokenString)
+
+	if ok := jwt.Validate(issuer); !ok {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
 	key, err := getKey(jwt.DecodedHeader.Kid)
 	if err != nil {

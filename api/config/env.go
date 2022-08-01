@@ -23,7 +23,10 @@ type EnvType struct {
 		Port string
 	}
 	AWS struct {
-		USER_POOL_ID      string
+		Cognito struct {
+			USER_POOL_ID  string
+			APP_CLIENT_ID string
+		}
 		REGION            string
 		DYNAMO_ENDPOINT   string
 		ACCESS_KEY_ID     string

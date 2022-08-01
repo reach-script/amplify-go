@@ -1,9 +1,11 @@
 package entity
 
 import (
+	"backend/config"
 	"encoding/base64"
 	"encoding/json"
 	"strings"
+	"time"
 )
 
 type header struct {
@@ -44,4 +46,22 @@ func NewJwt(token string) Jwt {
 	jwt.Claim = claim
 
 	return jwt
+}
+
+func (jwt *Jwt) Validate(iss string) bool {
+	claim := jwt.Claim
+
+	if claim.Exp < int(time.Now().Unix()) {
+		return false
+	}
+	if claim.ClientID != config.Env.AWS.Cognito.APP_CLIENT_ID {
+		return false
+	}
+	if claim.Iss != iss {
+		return false
+	}
+	if claim.TokenUse != "access" {
+		return false
+	}
+	return true
 }
