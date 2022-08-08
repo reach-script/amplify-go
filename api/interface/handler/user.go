@@ -3,7 +3,9 @@ package handler
 import (
 	"backend/domain/entity"
 	"backend/packages/context"
+	"backend/packages/errors"
 	"backend/usecase"
+
 	"net/http"
 	"strconv"
 
@@ -30,7 +32,7 @@ func NewUserHandler(userUseCase usecase.User) UserHandler {
 	}
 }
 
-func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) error {
+func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) errors.IError {
 	rdb := ctx.RDB()
 	params := createUserParams{}
 	if err := c.BindJSON(&params); err != nil {
@@ -51,11 +53,11 @@ func (handler *UserHandler) Create(ctx context.Context, c *gin.Context) error {
 	return nil
 }
 
-func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
+func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) errors.IError {
 	rdb := ctx.RDB()
 	params := updateUserParams{}
 	if err := c.BindJSON(&params); err != nil {
-		panic(err)
+		return errors.NewUnexpectedError(err)
 	}
 
 	user := entity.User{
@@ -65,33 +67,33 @@ func (handler *UserHandler) Update(ctx context.Context, c *gin.Context) error {
 	user.ID = params.ID
 	_, err := handler.userUseCase.Update(rdb, &user)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	c.Status(http.StatusOK)
 	return nil
 }
 
-func (handler *UserHandler) Delete(ctx context.Context, c *gin.Context) error {
+func (handler *UserHandler) Delete(ctx context.Context, c *gin.Context) errors.IError {
 	db := ctx.RDB()
 
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 
 	if err := handler.userUseCase.Delete(db, uint(id)); err != nil {
-		panic(err)
+		return err
 	}
 
 	c.Status(http.StatusOK)
 	return nil
 }
 
-func (handler *UserHandler) GetByID(ctx context.Context, c *gin.Context) error {
+func (handler *UserHandler) GetByID(ctx context.Context, c *gin.Context) errors.IError {
 	rdb := ctx.RDB()
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	user, err := handler.userUseCase.GetByID(rdb, uint(id))
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	c.JSON(http.StatusOK, user)

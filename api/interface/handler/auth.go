@@ -3,6 +3,7 @@ package handler
 import (
 	"backend/domain/entity"
 	"backend/packages/context"
+	"backend/packages/errors"
 	"backend/usecase"
 	"strings"
 
@@ -19,7 +20,7 @@ func NewAuthHandler(authUseCase usecase.Auth) AuthHandler {
 	}
 }
 
-func (handler *AuthHandler) Logout(ctx context.Context, c *gin.Context) error {
+func (handler *AuthHandler) Logout(ctx context.Context, c *gin.Context) errors.IError {
 	db := ctx.DynamoDB()
 
 	authorizationValue := c.Request.Header.Get("Authorization")

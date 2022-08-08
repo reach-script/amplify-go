@@ -3,12 +3,13 @@ package usecase
 import (
 	"backend/domain/entity"
 	"backend/domain/repository"
+	"backend/packages/errors"
 
 	"github.com/guregu/dynamo"
 )
 
 type Auth interface {
-	Logout(db *dynamo.DB, auth *entity.Auth) error
+	Logout(db *dynamo.DB, auth *entity.Auth) errors.IError
 }
 
 type authUseCase struct {
@@ -21,9 +22,9 @@ func NewAuthUseCase(authRepository repository.AuthRepository) Auth {
 	}
 }
 
-func (a *authUseCase) Logout(db *dynamo.DB, auth *entity.Auth) error {
+func (a *authUseCase) Logout(db *dynamo.DB, auth *entity.Auth) errors.IError {
 	if err := a.authRepository.Logout(db, auth); err != nil {
-		panic(err)
+		return errors.NewUnexpectedError(err)
 	}
 	return nil
 }

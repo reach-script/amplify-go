@@ -3,6 +3,7 @@ package persistence
 import (
 	"backend/domain/entity"
 	"backend/domain/repository"
+	"backend/packages/errors"
 
 	"github.com/jinzhu/gorm"
 )
@@ -13,36 +14,41 @@ func NewUserPersistance() repository.UserRepository {
 	return &userPersistence{}
 }
 
-func (u *userPersistence) Create(db *gorm.DB, user *entity.User) (*entity.User, error) {
+func (u *userPersistence) Create(db *gorm.DB, user *entity.User) (*entity.User, errors.IError) {
 	result := db.Create(&user)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.NewUnexpectedError(result.Error)
 	}
 	return user, nil
 }
 
-func (u *userPersistence) Update(db *gorm.DB, user *entity.User) (*entity.User, error) {
+func (u *userPersistence) Update(db *gorm.DB, user *entity.User) (*entity.User, errors.IError) {
 	result := db.Model(&user).Update(&user)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.NewUnexpectedError(result.Error)
 	}
 	return user, nil
 }
 
-func (u *userPersistence) Delete(db *gorm.DB, id uint) error {
+func (u *userPersistence) Delete(db *gorm.DB, id uint) errors.IError {
 	user := entity.User{}
 	user.ID = id
-	return db.Delete(&user).Error
+	if err := db.Delete(&user).Error; err != nil {
+		return errors.NewUnexpectedError(err)
+	}
+	return nil
 }
 
-func (u *userPersistence) GetByID(db *gorm.DB, id uint) (*entity.User, error) {
+func (u *userPersistence) GetByID(db *gorm.DB, id uint) (*entity.User, errors.IError) {
 	user := entity.User{}
-	result := db.Find(&user, id)
 
-	if result.Error != nil {
-		return nil, result.Error
+	if err := db.Find(&user, id).Error; err != nil {
+		if err.Error() == gorm.ErrRecordNotFound.Error() {
+			return nil, errors.NewNotFoundError(err)
+		}
+		return nil, errors.NewUnexpectedError(err)
 	}
 	return &user, nil
 }

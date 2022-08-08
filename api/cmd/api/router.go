@@ -6,6 +6,7 @@ import (
 	"backend/interface/handler"
 	"backend/interface/middleware"
 	"backend/packages/context"
+	"backend/packages/errors"
 	"backend/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -33,24 +34,18 @@ func registerRoutes(r *gin.Engine) {
 
 }
 
-type HandlerFunc func(ctx context.Context, c *gin.Context) error
+type HandlerFunc func(ctx context.Context, c *gin.Context) errors.IError
 
 func wrapperFunc(handlerFunc HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		ctx := context.New(c, database.GetRDB, database.GetDynamoDB)
 
-		handlerFunc(ctx, c)
-
-		// if err != nil {
-		// 	switch v := err.(type) {
-		// 	case *errors.Error:
-		// 		v.Response().Do(c, ctx.RequestID())
-		// 	default:
-		// 		errors.NewUnexpected(v).Response().Do(c, ctx.RequestID())
-		// 	}
-
-		// 	_ = c.Error(err)
-		// }
+		if err := handlerFunc(ctx, c); err != nil {
+			// TODO: request headerからidを取得する仕組みを実装
+			requestID := ""
+			err.Response().Do(c, requestID)
+			c.Error(err)
+		}
 	}
 }
