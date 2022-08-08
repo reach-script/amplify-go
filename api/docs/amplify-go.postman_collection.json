@@ -1,0 +1,221 @@
+{
+	"info": {
+		"_postman_id": "23bcbfd1-3265-49ce-a842-8f99e9330405",
+		"name": "amplify-go",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11312836"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "getById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/users/1",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"mizushima\",\n    \"cognito_sub\": \"test01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/users",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"name\": \"mizushima01\",\n    \"cognito_sub\": \"test01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base}}/users",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/users/1",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/auth/logout",
+							"host": [
+								"{{base}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "useBrowser",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "client_authentication",
+									"value": "header",
+									"type": "string"
+								},
+								{
+									"key": "clientId",
+									"value": "4jr93pvpje3qe72tuo3hhgngmu",
+									"type": "string"
+								},
+								{
+									"key": "authUrl",
+									"value": "https://amplify-go.auth.ap-northeast-1.amazoncognito.com/login",
+									"type": "string"
+								},
+								{
+									"key": "grant_type",
+									"value": "implicit",
+									"type": "string"
+								},
+								{
+									"key": "scope",
+									"value": "openid",
+									"type": "string"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://google.com",
+									"type": "string"
+								},
+								{
+									"key": "tokenName",
+									"value": "amplify-go",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJraWQiOiJuNFhldGZlbU03Y1B3UUVOdFwvNU5cL29sdFZnWHIxd3BRT2xBcEJoRkNNcnc9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIxMWFkOTI4ZS1hNzFhLTQ2ZWMtODQwZi0wNTcyZGEzMmFhOTciLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtbm9ydGhlYXN0LTEuYW1hem9uYXdzLmNvbVwvYXAtbm9ydGhlYXN0LTFfT3h6YzJ3dEh1IiwiY2xpZW50X2lkIjoiNjBiOXBqNnRtZXQ0Z3NnbjBrZGY2cXV2M2IiLCJvcmlnaW5fanRpIjoiNWZjYzBkZGEtOTkwYi00YTFmLWFiMDctY2Y2MDcxNGYzNDM0IiwiZXZlbnRfaWQiOiIzNjkzNDdjOS1hNjQ0LTQ3ODYtOTlhNy00M2Q5N2JjY2I4M2QiLCJ0b2tlbl91c2UiOiJhY2Nlc3MiLCJzY29wZSI6ImF3cy5jb2duaXRvLnNpZ25pbi51c2VyLmFkbWluIiwiYXV0aF90aW1lIjoxNjU5MzU4MzYxLCJleHAiOjE2NTk5NTMzOTYsImlhdCI6MTY1OTk0OTc5NiwianRpIjoiZDc3MWIzN2MtMTRmOC00NjU1LTg2MWQtODJmNWFiNDU0MTRlIiwidXNlcm5hbWUiOiIxMWFkOTI4ZS1hNzFhLTQ2ZWMtODQwZi0wNTcyZGEzMmFhOTcifQ.kbtgH_uqStkhbiLMhgCqseiaxvc0o-3d6KbYZI8yjkrAKY2yc20_zs3rcAPZp8MOXtUArsatv4Q-jmFDj-3azSoQhZMHdSLM9H7hxj_C2d4d70R8KhOaZSfRG92maFxtHplu8WLOASmoKKPfq5FG5RNZXt4e6I_BYnsAriGv_w4s4FBvaT_VP_cUrd3JF1_ZE8FM5682Exjixw8OK5zaItB-sgROLy3DZMeW_Ks66E200IjViPyPUgqwj9z_CGMTScy3qDH9eft8dTnPlsCh65Ni8GO6i4OBAlkpJtlV0HZKYD7AHZDJQdzmTdyhI-1U-epTAiv8QhX3tNdU3TL-Cw",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
